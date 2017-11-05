@@ -1,0 +1,10 @@
+version: '2'
+
+services:
+  emulator:
+    build: ./docker/emulator
+    container_name: rpi_emulator
+    privileged: true
+    volumes:
+      - ./:/host
+      - ./docker/emulator/emulator-data:/emulator-data

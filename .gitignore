@@ -1,0 +1,3 @@
+.DS_Store
+docker/emulator/emulator-data/
+!docker/emulator/emulator-data/.gitkeep

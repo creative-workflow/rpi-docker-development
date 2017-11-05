@@ -1,0 +1,13 @@
+#!/bin/bash
+
+export QEMU_AUDIO_DRV=none
+
+qemu-system-arm -kernel /emulator-data/qemu-rpi-kernel/kernel-qemu-4.1.7-jessie \
+                  -cpu arm1176 \
+                  -m 256 \
+                  -M versatilepb \
+                  -no-reboot \
+                  -serial stdio \
+                  -nographic \
+                  -append "root=/dev/sda2 panic=1 rootfstype=ext4 rw init=/bin/bash console=ttyAMA0" \
+                  -hda /emulator-data/rpi.img

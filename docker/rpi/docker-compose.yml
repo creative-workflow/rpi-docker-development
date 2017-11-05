@@ -1,0 +1,14 @@
+version: '2'
+
+services:
+  base:
+    build: ./config/docker/base
+    image: rpi_base:latest
+    container_name: base
+
+  wiringpi:
+    build: ./config/docker/wiringpi
+    volumes:
+      - /:/host
+    depends_on:
+      - base
