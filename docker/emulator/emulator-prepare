@@ -1,20 +1,29 @@
 #!/bin/bash
 
+# download raspberry image
 if [ ! -f /emulator-data/rpi.img ]; then
   cd /emulator-data
+
+  #TODO use specific version via env default
   wget https://downloads.raspberrypi.org/raspbian_latest
   unzip raspbian_latest
-  mv ./*.img rpi.img
+  mv *.img rpi.img
   rm raspbian_latest
 
-  # modify https://www.linux-tips-and-tricks.de/de/raspberry/22-wie-kann-man-raspberry-pi-unter-kvm-emulieren
-  IMAGE_OFFSET=`expr 512 * 94208`  # 94208 startsector second partition
-  mount /emulator-data/rpi.img -o offset=$IMAGE_OFFSET /mnt
-  echo '' > /mnt/etc/ld.so.preload
-  umount /mnt
   cd -
 fi
 
+# modify raspberry image for qemu emulation
+
+IMAGE_OFFSET=`expr 512 * 94208`  # 94208 startsector second partition, TODO magic via 'file rpi.img'
+mount rpi.img -o offset=$IMAGE_OFFSET /mnt
+if [ ! -f /mnt/etc/ld.so.preload.org ]; then
+  cp /mnt/etc/ld.so.preload /mnt/etc/ld.so.preload.org
+  echo '' > /mnt/etc/ld.so.preload
+fi
+umount /mnt
+
+# download qemu kernel
 if [ ! -d /emulator-data/qemu-rpi-kernel ]; then
   cd /emulator-data
   git clone https://github.com/dhruvvyas90/qemu-rpi-kernel.git

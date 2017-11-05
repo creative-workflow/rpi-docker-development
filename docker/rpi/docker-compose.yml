@@ -7,6 +7,7 @@ services:
     container_name: base
 
   wiringpi:
+    # uses rpi_base:latest as base image
     build: ./config/docker/wiringpi
     volumes:
       - /:/host
