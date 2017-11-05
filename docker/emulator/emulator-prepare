@@ -19,7 +19,7 @@ IMAGE_OFFSET=`expr 512 * 94208`  # 94208 startsector second partition, TODO magi
 mount rpi.img -o offset=$IMAGE_OFFSET /mnt
 if [ ! -f /mnt/etc/ld.so.preload.org ]; then
   cp /mnt/etc/ld.so.preload /mnt/etc/ld.so.preload.org
-  echo '' > /mnt/etc/ld.so.preload
+  echo '' > /mnt/etc/ld.so.preload # will be used later to build container for raspberry docker engine
 fi
 umount /mnt
 

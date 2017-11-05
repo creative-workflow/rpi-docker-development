@@ -6,7 +6,7 @@ Lets make raspberry development easy by using docker:
 
 2. Develop your raspberry app by using docker container with full access to the hardware.
 
-3. Build your rapsberry app image and deploy to sd card.
+3. Build your rapsberry os image and deploy to sd card or simply pull the docker container on rspberry.
 
 ## Prepare your host
 
@@ -37,13 +37,15 @@ TODO
 TODO
 
 ### Deploy to your 'real world' raspberry
-TODO
+##### via sd card
 
-# Limitations
+##### via docker image update
+
+## Limitations
 ### Sound
 
-Sound is not supported as you have to specify your drive to the emulator image. If you want to do so uncomment the line `export QEMU_AUDIO_DRV=none` in the `docker/emulator/emulator-run` file and rebuild the image ('docker-compose rebuild').
+Sound is not supported as you have to pass your drive to the emulator instance. If you want to do so, uncomment the line `export QEMU_AUDIO_DRV=none` in file `docker/emulator/emulator-run` and rebuild the image ('docker-compose rebuild').
 
 ### GUI
 
-At the moment there is no graphical user interface support. If you want to, you have to remove the `-nographic` parameter in `docker/emulator/emulator-run` and pass a device in `docker-compose.yml`
+At the moment there is no graphical user interface support. If you need one, a good point to start is to remove the `-nographic` parameter in `docker/emulator/emulator-run` and pass a device in `docker-compose.yml`.

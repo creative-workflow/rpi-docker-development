@@ -8,3 +8,4 @@ services:
     volumes:
       - ./:/host
       - ./docker/emulator/emulator-data:/emulator-data
+      - ./code:/code
