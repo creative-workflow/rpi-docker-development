@@ -6,7 +6,7 @@ Lets make raspberry development easy by using docker:
 
 2. Develop your raspberry app by using docker container with full access to the hardware.
 
-3. Build your rapsberry os image and deploy to sd card or simply pull the docker container on rspberry.
+3. Build your raspberry os image and deploy to sd card or simply pull the docker container on raspberry.
 
 ## Prepare your host
 
@@ -15,9 +15,14 @@ Install:
   * [docker-compose](https://docs.docker.com/compose/install/)
 
 
-## Run raspberry on your host
+## Prepare emulator
 
-Run in terminal `docker-compose up` and you will have a raspberry shell to work on.
+Run:
+  * `docker-compose build` to build your emulator container
+  * `docker-compose run emulator /emulator-prepare` to prepare raspberry emulation
+
+## Run raspberry
+Run `docker-compose run emulator emulator-run` and you will have a working raspberry shell.
 
 
 ## Setup docker and docker-compose on emulated raspberry

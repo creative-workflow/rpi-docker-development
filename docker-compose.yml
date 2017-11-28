@@ -5,6 +5,10 @@ services:
     build: ./docker/emulator
     container_name: rpi_emulator
     privileged: true
+    environment:
+      - RPI_EMULATOR_IMAGE_URI=http://downloads.raspberrypi.org/raspbian_lite/images/raspbian_lite-2017-07-05/2017-07-05-raspbian-jessie-lite.zip
+      - RPI_EMULATOR_KERNEL_GIT_REPO=https://github.com/dhruvvyas90/qemu-rpi-kernel.git
+      - RPI_EMULATOR_KERNEL=/emulator-data/qemu-rpi-kernel/kernel-qemu-4.4.34-jessie
     volumes:
       - ./:/host
       - ./docker/emulator/emulator-data:/emulator-data

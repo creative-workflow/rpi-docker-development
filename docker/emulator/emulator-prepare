@@ -1,31 +1,65 @@
 #!/bin/bash
 
-# download raspberry image
-if [ ! -f /emulator-data/rpi.img ]; then
-  cd /emulator-data
+echo "preparing emulator"
 
-  #TODO use specific version via env default
-  wget https://downloads.raspberrypi.org/raspbian_latest
-  unzip raspbian_latest
-  mv *.img rpi.img
-  rm raspbian_latest
+cd /emulator-data
 
-  cd -
+# download raspberry image and extract
+if [ ! -f rpi.img ]; then
+  if [ "x$RPI_EMULATOR_IMAGE_URI" == "x" ]; then
+    echo 'specify RPI_EMULATOR_IMAGE_URI env var'
+    exit 1
+  fi
+
+  EMULATOR_IMAGE_FILE=`basename "$RPI_EMULATOR_IMAGE_URI"`
+  if [ ! -f "$EMULATOR_IMAGE_FILE" ] ; then
+    wget "$RPI_EMULATOR_IMAGE_URI"
+  fi
+
+  if [ -f "$EMULATOR_IMAGE_FILE" ] ; then
+      case $EMULATOR_IMAGE_FILE in
+          *.tar.bz2)  tar xjf $EMULATOR_IMAGE_FILE      ;;
+          *.tar.gz)   tar xzf $EMULATOR_IMAGE_FILE      ;;
+          *.bz2)      bunzip2 $EMULATOR_IMAGE_FILE      ;;
+          *.gz)       gunzip $EMULATOR_IMAGE_FILE       ;;
+          *.tar)      tar xf $EMULATOR_IMAGE_FILE       ;;
+          *.tbz2)     tar xjf $EMULATOR_IMAGE_FILE      ;;
+          *.tgz)      tar xzf $EMULATOR_IMAGE_FILE      ;;
+          *.zip)      unzip $EMULATOR_IMAGE_FILE        ;;
+          *)          echo "'$EMULATOR_IMAGE_FILE' cannot be extracted" ;;
+      esac
+  else
+      echo "'$EMULATOR_IMAGE_FILE' is not a valid file"
+  fi
+
+  if [ -f *.img ] ; then
+    mv *.img rpi.img
+    rm "$EMULATOR_IMAGE_FILE"
+  fi
 fi
 
 # modify raspberry image for qemu emulation
+OFSP_SECOND_IMAGE_OFFSET=$(file "rpi.img" | cut -d';' -f 3 | egrep -o 'startsector ([[:digit:]]*)' | head -n1 | cut -d' ' -f2)
+IMAGE_OFFSET=$((512 * $OFSP_SECOND_IMAGE_OFFSET)) # 94208 startsector second partition, TODO magic via 'file rpi.img'
 
-IMAGE_OFFSET=`expr 512 * 94208`  # 94208 startsector second partition, TODO magic via 'file rpi.img'
+echo "mounting emulator-data/rpi.img from offset $IMAGE_OFFSET"
 mount rpi.img -o offset=$IMAGE_OFFSET /mnt
+
+# enable ssh
+echo '' > /mnt/ssh
+
 if [ ! -f /mnt/etc/ld.so.preload.org ]; then
+  # will be used later to build container for raspberry docker engine
   cp /mnt/etc/ld.so.preload /mnt/etc/ld.so.preload.org
-  echo '' > /mnt/etc/ld.so.preload # will be used later to build container for raspberry docker engine
+  echo '' > /mnt/etc/ld.so.preload
 fi
 umount /mnt
 
+
 # download qemu kernel
-if [ ! -d /emulator-data/qemu-rpi-kernel ]; then
-  cd /emulator-data
-  git clone https://github.com/dhruvvyas90/qemu-rpi-kernel.git
-  cd -
+RPI_KERNEL_FOLDER=`basename "$RPI_EMULATOR_KERNEL_GIT_REPO" | cut -d'.' -f1`
+if [ ! -d "$RPI_KERNEL_FOLDER" ]; then
+  git clone $RPI_EMULATOR_KERNEL_GIT_REPO
 fi
+
+cd -

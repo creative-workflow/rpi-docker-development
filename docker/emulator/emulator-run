@@ -1,13 +1,29 @@
 #!/bin/bash
 
+echo "starting emulator shell with $RPI_EMULATOR_KERNEL"
+
 export QEMU_AUDIO_DRV=none
 
-qemu-system-arm -kernel /emulator-data/qemu-rpi-kernel/kernel-qemu-4.1.7-jessie \
+qemu-system-arm -kernel "$RPI_EMULATOR_KERNEL" \
                   -cpu arm1176 \
                   -m 256 \
                   -M versatilepb \
                   -no-reboot \
                   -serial stdio \
+                  -monitor stdio \
                   -nographic \
-                  -append "root=/dev/sda2 panic=1 rootfstype=ext4 rw init=/bin/bash console=ttyAMA0" \
+                  -append "root=/dev/sda2 panic=1 rootfstype=ext4 console=ttyAMA0 rw" \
+                  -net user,hostfwd=tcp::2222-:22 \
+                  -net nic \
                   -hda /emulator-data/rpi.img
+
+
+# qemu-system-arm -kernel "$RPI_EMULATOR_KERNEL" \
+#                   -cpu arm1176 \
+#                   -m 256 \
+#                   -M versatilepb \
+#                   -no-reboot \
+#                   -serial stdio \
+#                   -nographic \
+#                   -append "root=/dev/sda2 panic=1 rootfstype=ext4 console=ttyAMA0 init=/bin/sh rw" \
+#                   -hda /emulator-data/rpi.img
